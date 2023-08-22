@@ -39,7 +39,7 @@ public class Sample {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sample sample = (Sample) o;
-        return Objects.equals(id, sample.id);
+        return Objects.equals(id, sample.getId());
     }
 
 

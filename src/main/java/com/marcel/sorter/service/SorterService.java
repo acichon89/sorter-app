@@ -38,6 +38,16 @@ public class SorterService {
         Long rackId = rackIdsList.get(new Random().nextInt(rackIdsList.size()));
         log.debug("Try to assign sample {} to rack ID {}", sample, rackId);
         Rack rack = this.rackRepository.findWithLockingById(rackId).orElseThrow(() -> new IllegalStateException("Could not load rack with id"+rackId));
+        validateRackWithSample(sample, rack);
+        log.info("Assigned rack id {} for sample {}", rack.getId(), sample);
+        rack.addSample(sample);
+        Rack savedRack = rackRepository.save(rack);
+        Assignment sa = Assignment.of(savedRack.getSamples().get(savedRack.getSamples().size() - 1).getId(), rackId);
+        log.debug("Attempt to save assignment {}", sa);
+        return sa;
+    }
+
+    private static void validateRackWithSample(Sample sample, Rack rack) {
         if (rack.contains(sample)) {
             log.trace("Rack already changed and contains same data");
             throw new ObjectOptimisticLockingFailureException(Rack.class, rack);
@@ -46,11 +56,5 @@ public class SorterService {
             log.trace("Rack already changed and exceeded capacity");
             throw new ObjectOptimisticLockingFailureException(Rack.class, rack);
         }
-        log.info("Assigned rack id {} for sample {}", rack.getId(), sample);
-        rack.addSample(sample);
-        Rack savedRack = rackRepository.save(rack);
-        Assignment sa = Assignment.of(savedRack.getSamples().get(savedRack.getSamples().size() - 1).getId(), rackId);
-        log.debug("Attempt to save assignement {}", sa);
-        return sa;
     }
 }

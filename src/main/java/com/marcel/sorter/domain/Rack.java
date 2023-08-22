@@ -40,7 +40,7 @@ public class Rack {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rack rack = (Rack) o;
-        return Objects.equals(id, rack.id);
+        return Objects.equals(id, rack.getId());
     }
 
     @Override
